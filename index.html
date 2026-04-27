@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pace">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="manifest" href="manifest.json">
+  <title>Pace Converter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 0;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    /* --- CARD --- */
+    .card {
+      background: #161616;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    /* --- PACE INPUT --- */
+    .pace-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .time-field label {
+      font-size: 11px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .time-field input {
+      width: 100%;
+      background: #222;
+      border: 1.5px solid #2a2a2a;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 36px;
+      font-weight: 300;
+      text-align: center;
+      padding: 12px 8px;
+      outline: none;
+      transition: border-color 0.15s;
+      font-variant-numeric: tabular-nums;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .time-field input:focus {
+      border-color: #4ade80;
+    }
+
+    .time-field input::placeholder { color: #333; }
+
+    .colon {
+      font-size: 32px;
+      font-weight: 300;
+      color: #444;
+      padding-bottom: 16px;
+      user-select: none;
+    }
+
+    .unit-label {
+      font-size: 13px;
+      color: #555;
+      font-weight: 400;
+      text-align: right;
+      margin-top: -8px;
+    }
+
+    /* --- RESULT --- */
+    .result-card {
+      background: #161616;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-value {
+      font-size: 64px;
+      font-weight: 200;
+      letter-spacing: -2px;
+      color: #4ade80;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .result-value span.decimal {
+      font-size: 48px;
+      color: #2a9b55;
+    }
+
+    .result-unit {
+      font-size: 14px;
+      color: #555;
+      font-weight: 400;
+    }
+
+    /* --- DIVIDER --- */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #222;
+    }
+
+    .divider-icon {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* --- REVERSE SECTION --- */
+    .reverse-section {
+      background: #161616;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .speed-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .speed-input-row input {
+      flex: 1;
+      background: #222;
+      border: 1.5px solid #2a2a2a;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 36px;
+      font-weight: 300;
+      text-align: center;
+      padding: 12px 8px;
+      outline: none;
+      transition: border-color 0.15s;
+      font-variant-numeric: tabular-nums;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .speed-input-row input:focus {
+      border-color: #60a5fa;
+    }
+
+    .speed-input-row input::placeholder { color: #333; }
+
+    .speed-unit {
+      font-size: 14px;
+      color: #555;
+      font-weight: 400;
+      min-width: 36px;
+    }
+
+    .reverse-result {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .reverse-result-value {
+      font-size: 52px;
+      font-weight: 200;
+      letter-spacing: -1px;
+      color: #60a5fa;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .reverse-result-unit {
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* --- QUICK REFS --- */
+    .quick-refs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .quick-ref {
+      background: #161616;
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.1s;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border: 1.5px solid transparent;
+    }
+
+    .quick-ref:active { background: #1e1e1e; }
+
+    .quick-ref-pace {
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .quick-ref-speed {
+      font-size: 12px;
+      color: #555;
+      font-variant-numeric: tabular-nums;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="title">Pace Converter</div>
+
+    <!-- PACE → KM/H -->
+    <div class="card">
+      <div class="card-label">Min/km → km/u</div>
+      <div class="pace-input-row">
+        <div class="time-field">
+          <input type="number" id="minutes" inputmode="numeric" min="0" max="99" placeholder="0" maxlength="2">
+          <label>min</label>
+        </div>
+        <div class="colon">:</div>
+        <div class="time-field">
+          <input type="number" id="seconds" inputmode="numeric" min="0" max="59" placeholder="00" maxlength="2">
+          <label>sec</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="card-label">Snelheid</div>
+      <div class="result-value" id="kph-display">—</div>
+      <div class="result-unit">kilometer per uur</div>
+    </div>
+
+    <div class="divider"><span class="divider-icon">⇅</span></div>
+
+    <!-- KM/H → PACE -->
+    <div class="reverse-section">
+      <div class="card-label">km/u → min/km</div>
+      <div class="speed-input-row">
+        <input type="number" id="speed" inputmode="decimal" min="0" max="99" step="0.1" placeholder="0.0">
+        <div class="speed-unit">km/u</div>
+      </div>
+      <div class="reverse-result">
+        <div class="reverse-result-value" id="pace-display">—</div>
+        <div class="reverse-result-unit">min per kilometer</div>
+      </div>
+    </div>
+
+    <!-- SNELLE REFERENTIES -->
+    <div class="quick-refs" id="quick-refs"></div>
+  </div>
+
+  <script>
+    const REFS = [
+      [4,0], [4,30], [5,0], [5,30], [6,0], [6,30]
+    ];
+
+    function paceToKph(min, sec) {
+      const totalMin = min + sec / 60;
+      if (totalMin <= 0) return null;
+      return 60 / totalMin;
+    }
+
+    function kphToPace(kph) {
+      if (kph <= 0) return null;
+      const totalMin = 60 / kph;
+      const m = Math.floor(totalMin);
+      const s = Math.round((totalMin - m) * 60);
+      return { m, s };
+    }
+
+    function formatKph(v) {
+      if (v === null) return '—';
+      const str = v.toFixed(2);
+      const [int, dec] = str.split('.');
+      return `${int}<span class="decimal">.${dec}</span>`;
+    }
+
+    function formatPace(p) {
+      if (!p) return '—';
+      const s = p.s === 60 ? (p.m + 1 + ':00') : `${p.m}:${String(p.s).padStart(2,'0')}`;
+      return p.s === 60 ? s : `${p.m}:${String(p.s).padStart(2,'0')}`;
+    }
+
+    // Pace → kph
+    const mInput = document.getElementById('minutes');
+    const sInput = document.getElementById('seconds');
+    const kphDisplay = document.getElementById('kph-display');
+
+    function updateKph() {
+      const m = parseInt(mInput.value) || 0;
+      const s = parseInt(sInput.value) || 0;
+      if (m === 0 && s === 0) { kphDisplay.innerHTML = '—'; return; }
+      const v = paceToKph(m, s);
+      kphDisplay.innerHTML = formatKph(v);
+    }
+
+    mInput.addEventListener('input', () => {
+      if (mInput.value.length >= 2) sInput.focus();
+      updateKph();
+    });
+
+    sInput.addEventListener('input', () => {
+      let v = parseInt(sInput.value);
+      if (v > 59) sInput.value = 59;
+      updateKph();
+    });
+
+    // kph → pace
+    const speedInput = document.getElementById('speed');
+    const paceDisplay = document.getElementById('pace-display');
+
+    speedInput.addEventListener('input', () => {
+      const v = parseFloat(speedInput.value);
+      if (!v) { paceDisplay.textContent = '—'; return; }
+      const p = kphToPace(v);
+      paceDisplay.textContent = p ? formatPace(p) : '—';
+    });
+
+    // Quick refs
+    const container = document.getElementById('quick-refs');
+    REFS.forEach(([m, s]) => {
+      const kph = paceToKph(m, s);
+      const el = document.createElement('div');
+      el.className = 'quick-ref';
+      el.innerHTML = `
+        <div class="quick-ref-pace">${m}:${String(s).padStart(2,'0')} /km</div>
+        <div class="quick-ref-speed">${kph.toFixed(2)} km/u</div>
+      `;
+      el.addEventListener('click', () => {
+        mInput.value = m;
+        sInput.value = String(s).padStart(2, '0');
+        updateKph();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      container.appendChild(el);
+    });
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
