@@ -39,7 +39,7 @@
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #666;
+      color: #fff;
     }
 
     /* --- CARD --- */
@@ -57,7 +57,7 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #555;
+      color: #fff;
     }
 
     /* --- PACE INPUT --- */
@@ -77,7 +77,7 @@
 
     .time-field label {
       font-size: 11px;
-      color: #555;
+      color: #fff;
       font-weight: 500;
     }
 
@@ -146,7 +146,7 @@
 
     .result-unit {
       font-size: 14px;
-      color: #555;
+      color: #fff;
       font-weight: 400;
     }
 
@@ -203,14 +203,14 @@
     }
 
     .speed-input-row input:focus {
-      border-color: #60a5fa;
+      border-color: #4ade80;
     }
 
     .speed-input-row input::placeholder { color: #333; }
 
     .speed-unit {
       font-size: 14px;
-      color: #555;
+      color: #fff;
       font-weight: 400;
       min-width: 36px;
     }
@@ -225,48 +225,14 @@
       font-size: 52px;
       font-weight: 200;
       letter-spacing: -1px;
-      color: #60a5fa;
+      color: #4ade80;
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
 
     .reverse-result-unit {
       font-size: 14px;
-      color: #555;
-    }
-
-    /* --- QUICK REFS --- */
-    .quick-refs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .quick-ref {
-      background: #161616;
-      border-radius: 12px;
-      padding: 12px 14px;
-      cursor: pointer;
-      transition: background 0.1s;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      border: 1.5px solid transparent;
-    }
-
-    .quick-ref:active { background: #1e1e1e; }
-
-    .quick-ref-pace {
-      font-size: 16px;
-      font-weight: 500;
       color: #fff;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .quick-ref-speed {
-      font-size: 12px;
-      color: #555;
-      font-variant-numeric: tabular-nums;
     }
 
   </style>
@@ -312,15 +278,9 @@
       </div>
     </div>
 
-    <!-- SNELLE REFERENTIES -->
-    <div class="quick-refs" id="quick-refs"></div>
   </div>
 
   <script>
-    const REFS = [
-      [4,0], [4,30], [5,0], [5,30], [6,0], [6,30]
-    ];
-
     function paceToKph(min, sec) {
       const totalMin = min + sec / 60;
       if (totalMin <= 0) return null;
@@ -381,25 +341,6 @@
       if (!v) { paceDisplay.textContent = '—'; return; }
       const p = kphToPace(v);
       paceDisplay.textContent = p ? formatPace(p) : '—';
-    });
-
-    // Quick refs
-    const container = document.getElementById('quick-refs');
-    REFS.forEach(([m, s]) => {
-      const kph = paceToKph(m, s);
-      const el = document.createElement('div');
-      el.className = 'quick-ref';
-      el.innerHTML = `
-        <div class="quick-ref-pace">${m}:${String(s).padStart(2,'0')} /km</div>
-        <div class="quick-ref-speed">${kph.toFixed(2)} km/u</div>
-      `;
-      el.addEventListener('click', () => {
-        mInput.value = m;
-        sInput.value = String(s).padStart(2, '0');
-        updateKph();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-      container.appendChild(el);
     });
 
     // Service Worker
