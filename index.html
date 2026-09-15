@@ -235,6 +235,19 @@
       color: #fff;
     }
 
+    /* --- AVG RESULT --- */
+    .avg-result {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .avg-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
   </style>
 </head>
 <body>
@@ -275,6 +288,47 @@
       <div class="reverse-result">
         <div class="reverse-result-value" id="pace-display">—</div>
         <div class="reverse-result-unit">min per kilometer</div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-icon">⇅</span></div>
+
+    <!-- TOTAALTIJD + AFSTAND → SNELHEID -->
+    <div class="card">
+      <div class="card-label">Tijd + afstand → snelheid</div>
+      <div class="pace-input-row">
+        <div class="time-field">
+          <input type="number" id="total-h" inputmode="numeric" min="0" max="99" placeholder="0">
+          <label>uur</label>
+        </div>
+        <div class="colon">:</div>
+        <div class="time-field">
+          <input type="number" id="total-m" inputmode="numeric" min="0" max="59" placeholder="00">
+          <label>min</label>
+        </div>
+        <div class="colon">:</div>
+        <div class="time-field">
+          <input type="number" id="total-s" inputmode="numeric" min="0" max="59" placeholder="00">
+          <label>sec</label>
+        </div>
+      </div>
+      <div class="speed-input-row">
+        <input type="number" id="total-dist" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+        <div class="speed-unit">km</div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="card-label">Gemiddelde snelheid</div>
+      <div class="avg-result">
+        <div class="avg-row">
+          <div class="result-value" id="avg-kph">—</div>
+          <div class="result-unit">kilometer per uur</div>
+        </div>
+        <div class="avg-row">
+          <div class="reverse-result-value" id="avg-pace">—</div>
+          <div class="reverse-result-unit">min per kilometer</div>
+        </div>
       </div>
     </div>
 
@@ -342,6 +396,46 @@
       const p = kphToPace(v);
       paceDisplay.textContent = p ? formatPace(p) : '—';
     });
+
+    // Totaaltijd + afstand → gem. snelheid
+    const totalH    = document.getElementById('total-h');
+    const totalM    = document.getElementById('total-m');
+    const totalS    = document.getElementById('total-s');
+    const totalDist = document.getElementById('total-dist');
+    const avgKph    = document.getElementById('avg-kph');
+    const avgPace   = document.getElementById('avg-pace');
+
+    function updateAvg() {
+      const h    = parseInt(totalH.value)    || 0;
+      const m    = parseInt(totalM.value)    || 0;
+      const s    = parseInt(totalS.value)    || 0;
+      const dist = parseFloat(totalDist.value) || 0;
+      const totalSec = h * 3600 + m * 60 + s;
+      if (totalSec === 0 || dist === 0) {
+        avgKph.innerHTML = '—';
+        avgPace.textContent = '—';
+        return;
+      }
+      const kph = dist / (totalSec / 3600);
+      avgKph.innerHTML = formatKph(kph);
+      const p = kphToPace(kph);
+      avgPace.textContent = p ? formatPace(p) : '—';
+    }
+
+    totalH.addEventListener('input', () => {
+      if (totalH.value.length >= 2) totalM.focus();
+      updateAvg();
+    });
+    totalM.addEventListener('input', () => {
+      if (parseInt(totalM.value) > 59) totalM.value = 59;
+      if (totalM.value.length >= 2) totalS.focus();
+      updateAvg();
+    });
+    totalS.addEventListener('input', () => {
+      if (parseInt(totalS.value) > 59) totalS.value = 59;
+      updateAvg();
+    });
+    totalDist.addEventListener('input', updateAvg);
 
     // Service Worker
     if ('serviceWorker' in navigator) {
